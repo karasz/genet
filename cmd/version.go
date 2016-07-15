@@ -20,12 +20,12 @@ var versionCmd = &cobra.Command{
 	Short: "Print the version number of genet",
 	Long:  `All software has versions. This is genet's.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		// TODO: Work your own magic here
 		fmt.Printf("Genet's version is %s\n", GVersion)
 	},
 }
 
 func init() {
+	versionCmd.SetUsageTemplate("Usage: \n\tgenet version\n\n")
 	RootCmd.AddCommand(versionCmd)
 
 }
