@@ -8,35 +8,22 @@ package cmd
 
 import (
 	"fmt"
-
+	"github.com/karasz/genet/genetlib"
 	"github.com/spf13/cobra"
-	"net"
-	"strings"
 )
 
 var ifacesCmd = &cobra.Command{
 	Use:   "ifaces",
 	Short: "List network interfaces",
 	Long:  `List network interfaces and their associated addresses.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		ifaces, err := net.Interfaces()
+	RunE: func(cmd *cobra.Command, args []string) error {
+		ifaces, err := genetlib.GetIfaces()
 		if err != nil {
-			fmt.Print(fmt.Errorf("Interfaces: %+v\n", err.Error()))
-			return
+			fmt.Printf("The following error occured: %s\n", err)
+			return err
 		}
-		for _, i := range ifaces {
-			addrs, err := i.Addrs()
-			if err != nil {
-				fmt.Print(fmt.Errorf("Interfaces: %+v\n", err.Error()))
-				continue
-			}
-			ia := ""
-			for l := range addrs {
-				ia = ia + "," + addrs[l].String()
-			}
-			fmt.Printf("%v\t%s \n", i.Name, strings.TrimPrefix(ia, ","))
-		}
-
+		fmt.Printf("%+v\n", ifaces)
+		return nil
 	},
 }
 
