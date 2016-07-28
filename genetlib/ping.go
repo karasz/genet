@@ -37,18 +37,18 @@ func (p pingStats) String() string {
 	return fmt.Sprintf("Sent: %d, Received: %d, Lost: %d, Total time: %v, Min: %v, Max: %v, Avg: %v", p.Sent, p.Received, p.Lost, p.Totaltime, p.Min, p.Max, p.Avg)
 }
 
-func Ping(addr string, prot string, cnt int, iface string) (pingStats, error) {
+func Ping(addr string, prot string, cnt int, iface string, statsonly bool) (pingStats, error) {
 	switch strings.ToLower(prot) {
 	case "tcp":
-		return pingTCP(addr, cnt, iface)
+		return pingTCP(addr, cnt, iface, statsonly)
 	case "udp":
-		return pingUDP(addr, cnt, iface)
+		return pingUDP(addr, cnt, iface, statsonly)
 	}
 
-	return pingICMP(addr, cnt, iface)
+	return pingICMP(addr, cnt, iface, statsonly)
 }
 
-func pingICMP(address string, cnt int, iface string) (pingStats, error) {
+func pingICMP(address string, cnt int, iface string, statsonly bool) (pingStats, error) {
 	var stats pingStats
 	var err error
 
@@ -77,13 +77,11 @@ func pingICMP(address string, cnt int, iface string) (pingStats, error) {
 		resp := pingResp{addr, t}
 		alltime = alltime + t
 		if t < min {
-			min = t
-			stats.Min = t
+			min, stats.Min = t, t
 		}
 
 		if t > max {
-			max = t
-			stats.Max = t
+			max, stats.Max = t, t
 		}
 		stats.Responses = append(stats.Responses, resp)
 		stats.Received = stats.Received + 1
@@ -93,8 +91,14 @@ func pingICMP(address string, cnt int, iface string) (pingStats, error) {
 	start := time.Now()
 
 	for i := 1; i <= cnt; i++ {
+		if !statsonly {
+			fmt.Print(". ")
+		}
 		p.Run()
 		stats.Sent = stats.Sent + 1
+	}
+	if !statsonly {
+		fmt.Println("")
 	}
 	stats.Avg = alltime / time.Duration(cnt)
 	stats.Totaltime = time.Since(start)
@@ -103,12 +107,12 @@ func pingICMP(address string, cnt int, iface string) (pingStats, error) {
 	return stats, err
 }
 
-func pingTCP(addr string, cnt int, iface string) (pingStats, error) {
+func pingTCP(addr string, cnt int, iface string, q bool) (pingStats, error) {
 	var stats pingStats
 	err := errors.New("TCP ping not implemented")
 	return stats, err
 }
-func pingUDP(addr string, cnt int, iface string) (pingStats, error) {
+func pingUDP(addr string, cnt int, iface string, q bool) (pingStats, error) {
 	var stats pingStats
 	err := errors.New("UDP ping not implemented")
 	return stats, err

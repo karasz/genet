@@ -48,7 +48,7 @@ func doPing(cmd *cobra.Command, args []string) {
 	iface, _ := cmd.Flags().GetString("interface")
 	cnt, _ := cmd.Flags().GetInt("count")
 
-	res, err := genetlib.Ping(addr, prot, cnt, iface)
+	res, err := genetlib.Ping(addr, prot, cnt, iface, false)
 
 	if err != nil {
 		fmt.Println(err)
