@@ -1,0 +1,61 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "40vJyUB4ezQSn/NSadsKEOrudMc=",
+			"path": "github.com/inconshreveable/mousetrap",
+			"revision": "76626ae9c91c4f2a10f34cad8ce83ea42c93bb75",
+			"revisionTime": "2014-10-17T20:07:13Z"
+		},
+		{
+			"checksumSHA1": "0WLmlYwB5Ki23WaMHPlpLewUnO4=",
+			"path": "github.com/karasz/go-fastping",
+			"revision": "496f96870c7ff407b532937586029304b3b4b695",
+			"revisionTime": "2015-10-25T06:09:41Z"
+		},
+		{
+			"checksumSHA1": "gMvUE4x4idMiMMzfH2ZkI2YDxUY=",
+			"path": "github.com/spf13/cobra",
+			"revision": "a272c3cbd5ff80a5bf5c5603df50183f9f3f7324",
+			"revisionTime": "2016-07-08T20:24:02Z"
+		},
+		{
+			"checksumSHA1": "45OZzM/Hyc8mwjG2zn38n6bKZws=",
+			"path": "github.com/spf13/pflag",
+			"revision": "367864438f1b1a3c7db4da06a2f55b144e6784e0",
+			"revisionTime": "2016-06-10T19:09:02Z"
+		},
+		{
+			"checksumSHA1": "tK8eFmQ0JeKpR3P0TjiGobzlIh0=",
+			"path": "golang.org/x/net/bpf",
+			"revision": "6a513affb38dc9788b449d59ffed099b8de18fa0",
+			"revisionTime": "2016-07-26T08:19:14Z"
+		},
+		{
+			"checksumSHA1": "vU7M5xs/uYYjyKv+P8ZqQCT3LeI=",
+			"path": "golang.org/x/net/icmp",
+			"revision": "6a513affb38dc9788b449d59ffed099b8de18fa0",
+			"revisionTime": "2016-07-26T08:19:14Z"
+		},
+		{
+			"checksumSHA1": "yRuyntx9a59ugMi5NlN4ST0XRcI=",
+			"path": "golang.org/x/net/internal/iana",
+			"revision": "6a513affb38dc9788b449d59ffed099b8de18fa0",
+			"revisionTime": "2016-07-26T08:19:14Z"
+		},
+		{
+			"checksumSHA1": "BJrlL/vetMJZLv8XPuzvw3ZITaU=",
+			"path": "golang.org/x/net/ipv4",
+			"revision": "6a513affb38dc9788b449d59ffed099b8de18fa0",
+			"revisionTime": "2016-07-26T08:19:14Z"
+		},
+		{
+			"checksumSHA1": "oHDMN5yvCAux6ghrbdDYEyaOydo=",
+			"path": "golang.org/x/net/ipv6",
+			"revision": "6a513affb38dc9788b449d59ffed099b8de18fa0",
+			"revisionTime": "2016-07-26T08:19:14Z"
+		}
+	],
+	"rootPath": "github.com/karasz/genet"
+}

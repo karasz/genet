@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/tatsushid/go-fastping"
+	"github.com/karasz/go-fastping"
 )
 
 type pingResp struct {
@@ -38,28 +38,33 @@ func (p pingStats) String() string {
 }
 
 func Ping(addr string, prot string, cnt int, iface string, statsonly bool) (pingStats, error) {
-	switch strings.ToLower(prot) {
-	case "tcp":
+
+	if strings.ToLower(prot) == "tcp" {
 		return pingTCP(addr, cnt, iface, statsonly)
-	case "udp":
-		return pingUDP(addr, cnt, iface, statsonly)
 	}
 
-	return pingICMP(addr, cnt, iface, statsonly)
+	return pingICMP(addr, prot, cnt, iface, statsonly)
 }
 
-func pingICMP(address string, cnt int, iface string, statsonly bool) (pingStats, error) {
+func pingICMP(address string, prot string, cnt int, iface string, statsonly bool) (pingStats, error) {
 	var stats pingStats
 	var err error
 
 	min := time.Hour
 	max := time.Nanosecond
 	alltime := time.Nanosecond * 0
+
 	p := fastping.NewPinger()
+
+	if strings.ToLower(prot) == "udp" {
+		p.Network("udp")
+	}
 	netProto := "ip4:icmp"
+
 	if strings.Index(address, ":") != -1 {
 		netProto = "ip6:ipv6-icmp"
 	}
+
 	ra, err := net.ResolveIPAddr(netProto, address)
 
 	if err != nil {
@@ -110,10 +115,5 @@ func pingICMP(address string, cnt int, iface string, statsonly bool) (pingStats,
 func pingTCP(addr string, cnt int, iface string, q bool) (pingStats, error) {
 	var stats pingStats
 	err := errors.New("TCP ping not implemented")
-	return stats, err
-}
-func pingUDP(addr string, cnt int, iface string, q bool) (pingStats, error) {
-	var stats pingStats
-	err := errors.New("UDP ping not implemented")
 	return stats, err
 }
