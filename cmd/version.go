@@ -13,6 +13,7 @@ import (
 )
 
 var GVersion = "0.0.1"
+var name = "Skilled Haystack"
 
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
