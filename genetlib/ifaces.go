@@ -10,22 +10,22 @@ import (
 	"net"
 )
 
-type genetiface struct {
-	index        int
-	mtu          int
-	name         string
-	hardwareaddr string
-	flags        string
-	addr         string
+type GenetIface struct {
+	Index        int
+	Mtu          int
+	Name         string
+	Hardwareaddr string
+	Flags        string
+	Addr         string
 }
 
-func GetIfaces() ([]genetiface, error) {
+func GetIfaces() ([]GenetIface, error) {
 
 	nifs, err := net.Interfaces()
 	if err != nil {
 		return nil, err
 	}
-	genets := make([]genetiface, 0)
+	genets := make([]GenetIface, 0)
 
 	for z, nif := range nifs {
 		addrs := ""
@@ -36,7 +36,7 @@ func GetIfaces() ([]genetiface, error) {
 			}
 			addrs = addrs + addr.String()
 		}
-		mygenetiface := genetiface{nif.Index, nif.MTU, nif.Name, nif.HardwareAddr.String(), nif.Flags.String(), addrs}
+		mygenetiface := GenetIface{nif.Index, nif.MTU, nif.Name, nif.HardwareAddr.String(), nif.Flags.String(), addrs}
 		genets = append(genets, mygenetiface)
 	}
 
