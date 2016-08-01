@@ -74,18 +74,12 @@ func pingICMP(address string, prot string, cnt int, iface string, statsonly bool
 	}
 
 	if iface != "" {
-		ifc, _ := GetIfaces()
-		for _, tif := range ifc {
-			if tif.Name == iface {
-				throw := strings.Split(tif.Addr, "|")[0]
-				index := strings.Index(throw, "/")
-				firstip := ""
-				if index != -1 {
-					firstip = throw[:index]
-				}
-				p.Source(firstip)
-				stats.Source = firstip
-			}
+		if x, _ := GetIpFromName(iface); x != nil {
+			p.Source(x[0])
+			stats.Source = x[0]
+		} else {
+			fmt.Println("Selected interface does not have an IP address")
+			os.Exit(127)
 		}
 	}
 	p.AddIPAddr(ra)

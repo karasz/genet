@@ -8,6 +8,7 @@ package genetlib
 
 import (
 	"bufio"
+	"net"
 	"os"
 )
 
@@ -27,4 +28,22 @@ func ReadLines(filename string) ([]string, error) {
 		ret = append(ret, scanner.Text())
 	}
 	return ret, scanner.Err()
+}
+
+func GetIpFromName(ifaceName string) ([]string, error) {
+	var result []string
+	iface, err := net.InterfaceByName(ifaceName)
+	if err != nil {
+		return result, err
+	}
+	addrs, err := iface.Addrs()
+	if err != nil {
+		return result, err
+	}
+	for _, addr := range addrs {
+		ip, _, _ := net.ParseCIDR(addr.String())
+		result = append(result, ip.String())
+	}
+	return result, nil
+
 }
