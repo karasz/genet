@@ -8,8 +8,10 @@ package genetlib
 
 import (
 	"bufio"
+	"log"
 	"net"
 	"os"
+	"strings"
 )
 
 func ReadLines(filename string) ([]string, error) {
@@ -46,4 +48,17 @@ func GetIpFromName(ifaceName string) ([]string, error) {
 	}
 	return result, nil
 
+}
+
+func GetOutboundIP() string {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().String()
+	idx := strings.LastIndex(localAddr, ":")
+
+	return localAddr[0:idx]
 }
