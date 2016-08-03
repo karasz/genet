@@ -26,16 +26,17 @@ type pingStats struct {
 	Responses []pingResp
 	Sent      int
 	Received  int
-	Lost      int
+	Lost      float64
 	Source    string
 	Totaltime time.Duration
 	Min       time.Duration
 	Max       time.Duration
 	Avg       time.Duration
+	StdDev    time.Duration
 }
 
 func (p pingStats) String() string {
-	return fmt.Sprintf("Using: %v, Sent: %d, Received: %d, Lost: %d, Total time: %v, Min: %v, Max: %v, Avg: %v", p.Source, p.Sent, p.Received, p.Lost, p.Totaltime, p.Min, p.Max, p.Avg)
+	return fmt.Sprintf("Using: %v, Sent: %d, Received: %d, Lost: %f%%, Total time: %v, Min: %v, Max: %v, Avg: %v, StdDev: %v", p.Source, p.Sent, p.Received, p.Lost, p.Totaltime, p.Min, p.Max, p.Avg, p.StdDev)
 }
 
 func Ping(addr string, prot string, cnt int, iface string, statsonly bool) (pingStats, error) {
@@ -113,7 +114,16 @@ func pingICMP(address string, prot string, cnt int, iface string, statsonly bool
 	}
 	stats.Avg = alltime / time.Duration(cnt)
 	stats.Totaltime = time.Since(start)
-	stats.Lost = stats.Sent - stats.Received
+	stats.Lost = float64((stats.Sent-stats.Received)/stats.Sent) * 100
+
+	var series []float64
+	for _, s := range stats.Responses {
+
+		series = append(series, float64(s.rtt))
+	}
+
+	stats.StdDev = time.Duration(MakeStdDev(series, float64(stats.Avg)))
+
 	if stats.Source == "" {
 		stats.Source = "default"
 	}

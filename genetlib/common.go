@@ -9,6 +9,7 @@ package genetlib
 import (
 	"bufio"
 	"log"
+	"math"
 	"net"
 	"os"
 	"strings"
@@ -61,4 +62,18 @@ func GetOutboundIP() string {
 	idx := strings.LastIndex(localAddr, ":")
 
 	return localAddr[0:idx]
+}
+
+func MakeStdDev(series []float64, avg float64) float64 {
+	var sumsquares float64
+
+	if len(series) <= 1 {
+		return 0
+	}
+
+	for _, s := range series {
+		sumsquares += math.Pow(s-avg, 2)
+	}
+	varance := sumsquares / float64(len(series)-1)
+	return math.Sqrt(varance)
 }
