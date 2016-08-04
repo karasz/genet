@@ -8,10 +8,12 @@ package genetlib
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"math"
 	"net"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -76,4 +78,44 @@ func MakeStdDev(series []float64, avg float64) float64 {
 	}
 	varance := sumsquares / float64(len(series)-1)
 	return math.Sqrt(varance)
+}
+
+func CompareVersions(v1 string, v2 string) (int64, error) {
+	if strings.Index(v1, ".") == -1 || strings.Index(v2, ".") == -1 {
+		return 0, fmt.Errorf("No dot in version strings %s, %s", v1, v2)
+	}
+
+	vs1 := strings.Split(v1, ".")
+	vs2 := strings.Split(v2, ".")
+
+	if _, err := strconv.Atoi(vs1[0]); err != nil {
+		return 0, fmt.Errorf("Version %s does not begin with a number", v1)
+	}
+	if _, err := strconv.Atoi(vs2[0]); err != nil {
+		return 0, fmt.Errorf("Version %s does not begin with a number", v2)
+	}
+
+	var slic []string
+
+	if len(vs1) >= len(vs2) {
+		slic = vs2
+	} else {
+		slic = vs1
+	}
+
+	for i, _ := range slic {
+		if vs1[i] > vs2[i] {
+			return 1, nil
+			break
+		}
+		if vs1[i] < vs2[i] {
+			return -1, nil
+			break
+		}
+		if vs1[i] == vs2[i] {
+			continue
+		}
+	}
+	return 0, fmt.Errorf("No idea what happened :/")
+
 }
