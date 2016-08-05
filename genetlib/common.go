@@ -119,3 +119,28 @@ func CompareVersions(v1 string, v2 string) (int64, error) {
 	return 0, fmt.Errorf("No idea what happened :/")
 
 }
+
+func LookupLinuxUserById(id int) (string, error) {
+	usermap := make(map[int]string)
+
+	lines, err := ReadLines("/etc/passwd")
+	if err != nil {
+		return "", err
+	}
+
+	for _, line := range lines {
+		data := strings.Split(line, ":")
+		uid, err := strconv.Atoi(data[2])
+
+		if err != nil {
+			return "", err
+		}
+
+		usermap[uid] = data[0]
+	}
+
+	if usermap[id] != "" {
+		return usermap[id], nil
+	}
+	return "", fmt.Errorf("No User with UID = %d", id)
+}
