@@ -35,6 +35,23 @@ func ReadLines(filename string) ([]string, error) {
 	return ret, scanner.Err()
 }
 
+func ReadLinesNoFrills(filename string, hdrLines int, comm string) ([]string, error) {
+
+	z, err := ReadLines(filename)
+	if err != nil {
+		return []string{""}, err
+	}
+	z = z[hdrLines:]
+	if comm != "" {
+		for i, line := range z {
+			if strings.HasPrefix(line, comm) {
+				z = append(z[:i], z[i+1:]...)
+			}
+		}
+	}
+	return z, err
+}
+
 func GetIpFromName(ifaceName string) ([]string, error) {
 	var result []string
 	iface, err := net.InterfaceByName(ifaceName)
