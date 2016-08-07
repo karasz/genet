@@ -7,7 +7,6 @@
 package cmd
 
 import (
-	"errors"
 	"fmt"
 	"github.com/karasz/genet/genetlib"
 	"github.com/spf13/cobra"
@@ -22,7 +21,7 @@ var tracerouteCmd = &cobra.Command{
 	Long:         `Traceroute emulates the traceroute command from linux`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		if len(args) == 0 {
-			return errors.New("you must provide a host to ping as the first argument")
+			return fmt.Errorf("you must provide a host to ping as the first argument")
 		}
 		return nil
 	},
@@ -38,7 +37,7 @@ func init() {
 func doTraceroute(cmd *cobra.Command, args []string) {
 	addr := args[0]
 	if addr == "" {
-		fmt.Fprintf(os.Stderr, "An empty address was provided. You must provide an address as the first argument.\n")
+		fmt.Errorf("An empty address was provided. You must provide an address as the first argument.\n")
 		os.Exit(1)
 	}
 
