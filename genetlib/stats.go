@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"syscall"
 	"time"
 )
 
@@ -52,6 +53,21 @@ type diskstats struct {
 	IOs_current       int64
 	Time_IOs          time.Duration
 	Weighted_time_IOs time.Duration
+}
+
+type mntent struct {
+	fsname  string
+	dir     string
+	mnttype string
+	opts    string
+	freq    int64
+	passno  int64
+}
+
+type strucdf struct {
+	Name  string
+	Total int64
+	Free  int64
 }
 
 func (p procstats) String() string {
@@ -161,5 +177,53 @@ func GetStatsDisk() ([]diskstats, error) {
 
 		}
 	}
+
 	return result, nil
+}
+
+func GetMountSpace(path string) (int64, int64, error) {
+
+	struc := syscall.Statfs_t{}
+
+	err := syscall.Statfs(path, &struc)
+	if err != nil {
+		return 0, 0, err
+	}
+
+	return int64(struc.Bsize) * int64(struc.Blocks), int64(struc.Bsize) * int64(struc.Bfree), nil
+}
+
+func parseMounts() ([]mntent, error) {
+	result := []mntent{}
+
+	lines, err := ReadLines("/proc/mounts")
+	if err != nil {
+		return result, err
+	}
+	for _, line := range lines {
+		var lmnt mntent
+		lmnt.fsname = strings.Fields(line)[0]
+		lmnt.dir = strings.Fields(line)[1]
+		lmnt.mnttype = strings.Fields(line)[2]
+		lmnt.opts = strings.Fields(line)[3]
+		lmnt.freq = stringtoint64(strings.Fields(line)[4])
+		lmnt.passno = stringtoint64(strings.Fields(line)[5])
+		result = append(result, lmnt)
+	}
+	return result, nil
+}
+
+func GetDF() []strucdf {
+	var result []strucdf
+	mounts, _ := parseMounts()
+	for _, mount := range mounts {
+		var st strucdf
+		st.Name = mount.dir
+		st.Total, st.Free, _ = GetMountSpace(mount.dir)
+		//filter out devices with 0 blocks
+		if st.Total != 0 {
+			result = append(result, st)
+		}
+	}
+	return result
 }
