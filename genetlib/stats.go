@@ -78,6 +78,7 @@ func (p procstats) String() string {
 func (d diskstats) String() string {
 	return fmt.Sprintf("Name: %v Major: %v Minor: %v reads completed successfully: %v reads merged: %v sectors read: %v time spent reading: %v writes completed: %v writes merged: %v sectors written: %v time spent writing: %v I/Os currently in progress: %v time spent doing I/Os: %v weighted time spent doing I/Os: %v", d.Name, d.Major, d.Minor, d.Reads_ok, d.Reads_m, d.Sectors_read, d.Time_reading, d.Writes_ok, d.Writes_m, d.Sectors_written, d.Time_writting, d.IOs_current, d.Time_IOs, d.Weighted_time_IOs)
 }
+
 func stringtoint64(s string) int64 {
 	result, _ := strconv.ParseInt(s, 10, 64)
 	return result
