@@ -44,6 +44,7 @@ func fillAttrs(z netlink.Link) genetlink {
 	result.name = linka.Name
 	result.flags = strings.Replace(strings.ToUpper(linka.Flags.String()), "|", ",", -1)
 	result.mtu = linka.MTU
+	result.qlen = linka.TxQLen
 
 	qds, _ := netlink.QdiscList(z)
 	for _, qd := range qds {
@@ -74,7 +75,6 @@ func fillAttrs(z netlink.Link) genetlink {
 	result.state = "<NOT IMPLEMENTED>"
 	result.mode = "<NOT IMPLEMENTED>"
 	result.group = "<NOT IMPLEMENTED>"
-	result.qlen = 0
 
 	return result
 }
