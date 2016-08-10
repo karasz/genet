@@ -14,7 +14,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/karasz/go-fastping"
+	"github.com/tatsushid/go-fastping"
 )
 
 type pingResp struct {

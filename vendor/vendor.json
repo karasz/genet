@@ -9,12 +9,6 @@
 			"revisionTime": "2014-10-17T20:07:13Z"
 		},
 		{
-			"checksumSHA1": "0WLmlYwB5Ki23WaMHPlpLewUnO4=",
-			"path": "github.com/karasz/go-fastping",
-			"revision": "496f96870c7ff407b532937586029304b3b4b695",
-			"revisionTime": "2015-10-25T06:09:41Z"
-		},
-		{
 			"checksumSHA1": "gMvUE4x4idMiMMzfH2ZkI2YDxUY=",
 			"path": "github.com/spf13/cobra",
 			"revision": "a272c3cbd5ff80a5bf5c5603df50183f9f3f7324",
@@ -25,6 +19,31 @@
 			"path": "github.com/spf13/pflag",
 			"revision": "367864438f1b1a3c7db4da06a2f55b144e6784e0",
 			"revisionTime": "2016-06-10T19:09:02Z"
+		},
+		{
+			"checksumSHA1": "DpsruMRlfaXitPiELMUatEOMh1k=",
+			"path": "github.com/tatsushid/go-fastping",
+			"revision": "d7bb493dee3e090e2ffb6914adddf17c1e7c026c",
+			"revisionTime": "2016-01-08T17:53:29Z"
+		},
+		{
+			"checksumSHA1": "qpV8DLbdRyntEu/L9cDyu0gptl0=",
+			"path": "github.com/vishvananda/netlink",
+			"revision": "9dee363ad4abbc3c9a4a24a9f1e33363e224b111",
+			"revisionTime": "2016-07-29T15:59:42Z"
+		},
+		{
+			"checksumSHA1": "eW5+RtZGlN6QyOQYUD+LDJyJR+g=",
+			"path": "github.com/vishvananda/netlink/nl",
+			"revision": "9dee363ad4abbc3c9a4a24a9f1e33363e224b111",
+			"revisionTime": "2016-07-29T15:59:42Z"
+		},
+		{
+			"checksumSHA1": "zjfUA3qOv6grhBLpyJ+7EejXWQE=",
+			"origin": "github.com/vishvananda/netlink/vendor/github.com/vishvananda/netns",
+			"path": "github.com/vishvananda/netns",
+			"revision": "8ba1072b58e0c2a240eb5f6120165c7776c3e7b8",
+			"revisionTime": "2016-04-30T05:37:23Z"
 		},
 		{
 			"checksumSHA1": "tK8eFmQ0JeKpR3P0TjiGobzlIh0=",
