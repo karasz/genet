@@ -8,28 +8,32 @@ package cmd
 
 import (
 	"fmt"
-	"github.com/karasz/genet/genetlib"
 	"github.com/spf13/cobra"
+	"io/ioutil"
 )
 
 var ifacesCmd = &cobra.Command{
 	Use:   "ifaces",
 	Short: "List network interfaces",
 	Long:  `List network interfaces and their associated addresses.`,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		ifaces, err := genetlib.GetIfaces()
-		if err != nil {
-			fmt.Printf("The following error occured: %s\n", err)
-			return err
-		}
-		fmt.Printf("%+v\n", ifaces)
-		return nil
-	},
+	RunE:  doIfaces,
 }
 
 func init() {
 	RootCmd.AddCommand(ifacesCmd)
-	// TODO: Maybe implement output format like json or so...
-	// ifacesCmd.PersistentFlags().String("foo", "", "A help for foo")
+}
 
+func doIfaces(cmd *cobra.Command, args []string) error {
+	result := ""
+	ifaces, err := ioutil.ReadDir("/sys/class/net/")
+	if err != nil {
+		fmt.Println(result)
+		return err
+	}
+
+	for _, iface := range ifaces {
+		fmt.Println(iface.Name())
+	}
+
+	return nil
 }
