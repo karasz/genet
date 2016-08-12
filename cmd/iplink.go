@@ -32,10 +32,7 @@ func doIplink(cmd *cobra.Command, args []string) {
 
 	switch verb {
 	case "show":
-		_, err := genetlib.LinkShow()
-		if err != nil {
-			fmt.Println(err)
-		}
+		_, _ = genetlib.LinkShow(len(args) > 1)
 	default:
 		fmt.Errorf("Unknown or unimplemented verb %s\n", verb)
 		os.Exit(1)
