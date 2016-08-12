@@ -12,8 +12,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var GVersion = "0.0.1"
-var name = "Skilled Haystack"
+var GVersion = "0.0.2"
+var name = "Bobbled Wormhole"
 
 // versionCmd represents the version command
 var versionCmd = &cobra.Command{
