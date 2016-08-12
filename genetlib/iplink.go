@@ -72,9 +72,14 @@ func fillAttrs(z netlink.Link) genetlink {
 			result.linktype = "ether"
 		}
 	}
-	result.state = "<NOT IMPLEMENTED>"
-	result.mode = "<NOT IMPLEMENTED>"
-	result.group = "<NOT IMPLEMENTED>"
+
+	result.state = GetValFromFile("/sys/class/net/"+result.name+"/operstate", 0)
+	if GetValFromFile("/sys/class/net/"+result.name+"/link_mode", 0) == "0" {
+		result.mode = "DEFAULT"
+	} else {
+		result.mode = "DORMANT"
+	}
+	result.group = GetFieldValFromFile("/etc/iproute2/group", 0, GetValFromFile("/sys/class/net/"+result.name+"/netdev_group", 0), 1)
 
 	return result
 }

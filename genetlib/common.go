@@ -9,6 +9,7 @@ package genetlib
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"math"
 	"net"
@@ -160,4 +161,37 @@ func LookupLinuxUserById(id int) (string, error) {
 		return usermap[id], nil
 	}
 	return "", fmt.Errorf("No User with UID = %d", id)
+}
+
+func GetValFromFile(filename string, scase int) string {
+	z, err := ioutil.ReadFile(filename)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+
+	switch scase {
+	case 0:
+		return strings.ToUpper(string(z[:len(z)-1]))
+	case 1:
+		return strings.ToLower(string(z[:len(z)-1]))
+	default:
+		return string(z[:len(z)-1])
+	}
+}
+
+func GetFieldValFromFile(filename string, bkfld int, bkfldval string, fld int) string {
+	lines, err := ReadLinesNoFrills(filename, 0, "#")
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	var result string
+	for _, line := range lines {
+		if strings.Fields(line)[bkfld] == bkfldval {
+			result = strings.Fields(line)[fld]
+			break
+		}
+	}
+	return result
 }
