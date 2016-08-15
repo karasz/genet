@@ -8,11 +8,28 @@ package genetlib
 
 import (
 	"fmt"
+	"os"
+	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 	"syscall"
 	"time"
 )
+
+var tcpState = map[string]string{
+	"01": "ESTABLISHED",
+	"02": "SYN_SENT",
+	"03": "SYN_RECV",
+	"04": "FIN_WAIT1",
+	"05": "FIN_WAIT2",
+	"06": "TIME_WAIT",
+	"07": "CLOSE",
+	"08": "CLOSE_WAIT",
+	"09": "LAST_ACK",
+	"0A": "LISTEN",
+	"0B": "CLOSING",
+}
 
 type cpustats struct {
 	User       int64
@@ -25,6 +42,18 @@ type cpustats struct {
 	Steal      int64
 	Guest      int64
 	Guest_nice int64
+}
+
+type netstats struct {
+	Prot       string
+	User       string
+	Name       string
+	Pid        string
+	State      string
+	LocalIp    string
+	LocalPort  string
+	RemoteIp   string
+	RemotePort string
 }
 
 type procstats struct {
@@ -84,6 +113,34 @@ func stringtoint64(s string) int64 {
 	return result
 
 }
+
+func hextodec(s string) string {
+	var result string
+
+	d, err := strconv.ParseInt(s, 16, 32)
+	if err != nil {
+		fmt.Println(err)
+		result = ""
+	}
+
+	result = strconv.FormatInt(d, 10)
+	return result
+}
+
+func getIPfromHex(ipport string) string {
+	hip := strings.Split(ipport, ":")[0]
+	port := hextodec(strings.Split(ipport, ":")[1])
+	ip := fmt.Sprintf("%v.%v.%v.%v", hextodec(hip[6:8]), hextodec(hip[4:6]), hextodec(hip[2:4]), hextodec(hip[0:2]))
+	return fmt.Sprintf("%s:%s", ip, port)
+}
+func getNamefromPid(pid string) string {
+	exe := fmt.Sprintf("/proc/%s/exe", pid)
+	path, _ := os.Readlink(exe)
+	n := strings.Split(path, "/")
+	name := n[len(n)-1]
+	return strings.Title(name)
+}
+
 func GetUptime() (time.Duration, error) {
 	lines, err := ReadLines("/proc/uptime")
 	if err != nil {
@@ -142,9 +199,67 @@ func fillcpustats(str string) cpustats {
 	return result
 }
 
-func GetStatsNet() (string, error) {
-	return "Not implemented", nil
+func findPid(inode string) string {
+	pid := "-"
+
+	d, err := filepath.Glob("/proc/[0-9]*/fd/[0-9]*")
+	if err != nil {
+		fmt.Println(err)
+		return pid
+	}
+
+	re := regexp.MustCompile(inode)
+	for _, item := range d {
+		path, _ := os.Readlink(item)
+		out := re.FindString(path)
+		if len(out) != 0 {
+			pid = strings.Split(item, "/")[2]
+		}
+	}
+	return pid
 }
+
+func GetStatsNet() ([]netstats, error) {
+	var result []netstats
+
+	lines, err := ReadLinesNoFrills("/proc/net/tcp", 1, "")
+	if err != nil {
+		return result, err
+	}
+
+	for _, line := range lines {
+		res := tcpudpFillLine(line, "tcp")
+		result = append(result, res)
+	}
+
+	lines, err = ReadLinesNoFrills("/proc/net/udp", 1, "")
+	if err != nil {
+		return result, err
+	}
+
+	for _, line := range lines {
+		res := tcpudpFillLine(line, "udp")
+		result = append(result, res)
+	}
+
+	return result, nil
+}
+
+func tcpudpFillLine(line string, prot string) netstats {
+	var res netstats
+	us, _ := strconv.Atoi(strings.Fields(line)[7])
+	res.Prot = prot
+	res.User, _ = LookupLinuxUserById(us)
+	res.Pid = findPid(strings.Fields(line)[9])
+	res.Name = getNamefromPid(res.Pid)
+	res.State = tcpState[strings.Fields(line)[3]]
+	res.LocalIp = strings.Split(getIPfromHex(strings.Fields(line)[1]), ":")[0]
+	res.LocalPort = strings.Split(getIPfromHex(strings.Fields(line)[1]), ":")[1]
+	res.RemoteIp = strings.Split(getIPfromHex(strings.Fields(line)[2]), ":")[0]
+	res.RemotePort = strings.Split(getIPfromHex(strings.Fields(line)[2]), ":")[1]
+	return res
+}
+
 func GetStatsAll() (string, error) {
 	return "Not implemented", nil
 }
