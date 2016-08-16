@@ -44,6 +44,13 @@ type cpustats struct {
 	Guest_nice int64
 }
 
+type memstats struct {
+	Total     int64
+	Free      int64
+	Available int64
+	Unit      string
+}
+
 type netstats struct {
 	Prot       string
 	User       string
@@ -65,6 +72,7 @@ type procstats struct {
 	Procs_running int64
 	Procs_blocked int64
 	Softirq       string
+	Mem           memstats
 }
 
 type diskstats struct {
@@ -100,12 +108,16 @@ type strucdf struct {
 }
 
 func (p procstats) String() string {
-	return fmt.Sprintf("Cpu: %v Ctxt: %v Btime: %v Processes: %v Procs_running: %v Procs_blocked: %v SoftIRQs: %v", p.Cpu, p.Ctxt, p.Btime, p.Processes, p.Procs_running, p.Procs_blocked, p.Softirq)
+	return fmt.Sprintf("Cpu: %v Mem: %v Ctxt: %v Btime: %v Processes: %v Procs_running: %v Procs_blocked: %v SoftIRQs: %v", p.Cpu, p.Mem, p.Ctxt, p.Btime, p.Processes, p.Procs_running, p.Procs_blocked, p.Softirq)
 
 }
 
 func (d diskstats) String() string {
 	return fmt.Sprintf("Name: %v Major: %v Minor: %v reads completed successfully: %v reads merged: %v sectors read: %v time spent reading: %v writes completed: %v writes merged: %v sectors written: %v time spent writing: %v I/Os currently in progress: %v time spent doing I/Os: %v weighted time spent doing I/Os: %v", d.Name, d.Major, d.Minor, d.Reads_ok, d.Reads_m, d.Sectors_read, d.Time_reading, d.Writes_ok, d.Writes_m, d.Sectors_written, d.Time_writting, d.IOs_current, d.Time_IOs, d.Weighted_time_IOs)
+}
+
+func (m memstats) String() string {
+	return fmt.Sprintf("Total: %v Free: %v Available: %v Unit: %v", m.Total, m.Free, m.Available, m.Unit)
 }
 
 func stringtoint64(s string) int64 {
@@ -179,8 +191,33 @@ func GetStatsSys() (procstats, error) {
 			continue
 		}
 	}
+	result.Mem, _ = fillMemstats()
 	return result, err
 
+}
+
+func fillMemstats() (memstats, error) {
+	var result memstats
+
+	lines, err := ReadLines("/proc/meminfo")
+	if err != nil {
+		return result, err
+	}
+
+	for _, line := range lines {
+		switch strings.Fields(line)[0] {
+		case "MemTotal:":
+			result.Total = stringtoint64(strings.Fields(line)[1])
+			result.Unit = strings.Fields(line)[2]
+		case "MemFree:":
+			result.Free = stringtoint64(strings.Fields(line)[1])
+		case "MemAvailable:":
+			result.Available = stringtoint64(strings.Fields(line)[1])
+		default:
+			continue
+		}
+	}
+	return result, nil
 }
 
 func fillcpustats(str string) cpustats {
